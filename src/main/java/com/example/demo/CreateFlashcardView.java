@@ -8,6 +8,9 @@ import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.stage.Stage;
 
+/**
+* Sakhana Shree Suresh Kumar
+*/
 
 public class CreateFlashcardView extends Application {
 

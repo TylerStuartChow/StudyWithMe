@@ -32,6 +32,10 @@ public class CircleApplication extends Application {
 
     CalendarBasic calendar_obj;
 
+    NoteTaker noteTaker_obj;
+
+    Settings settings_obj;
+
     Scene setting_scene;
 
     Scene files_scene;

@@ -9,16 +9,19 @@ import javafx.scene.Parent;
 
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /** Kayden */
-public class SettingsController implements Initializable {
+public class SettingsController extends SaveState implements Initializable {
 
     @FXML
     private Pane parent;
     private static boolean darkMode;
     private String name;
     private Role role;
+
+    private String path = devFolder + "/Settings.json";
 
     @FXML
     private ChoiceBox<Role> roles;
@@ -37,12 +40,34 @@ public class SettingsController implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+
+        SettingsController list = SaveState.LoadObject(path, SettingsController.class);
+        System.out.println(list);
+
+
         roles.getItems().addAll(Role.Student_High, Role.Student_Uni, Role.Teacher, Role.Trainee, Role.Individual, Role.Other);
         if (roles.getSelectionModel().getSelectedItem() == null) {
             roles.setValue(Role.Other);
         }
 
     }
+
+    public void save() {
+        setRole(roles.getSelectionModel().getSelectedItem());
+        setName(nameBox.getText());
+
+        ArrayList saveList = new ArrayList<>();
+        saveList.add(name);
+        saveList.add(role);
+        saveList.add(darkMode);
+
+        SaveState.Save(path, saveList);
+
+        SaveState.Save(path, )
+
+        System.out.println(saveList);
+    }
+
 
     public String getName(){
         return this.name;
@@ -60,10 +85,6 @@ public class SettingsController implements Initializable {
         this.role = role;
     }
 
-    public void save() {
-        setRole(roles.getSelectionModel().getSelectedItem());
-        setName(nameBox.getText());
-    }
 
     public void exit() {
         System.out.println(getRole());

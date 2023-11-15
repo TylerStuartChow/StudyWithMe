@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Font?>
+
+<StackPane prefWidth="350" prefHeight="410" style="-fx-background-color: #98FB98"
+            xmlns="http://javafx.com/javafx"
+            xmlns:fx="http://javafx.com/fxml"
+            fx:controller="sample.SideMenuControllerNEW">
+    <children>
+        <Label layoutX="50" layoutY="50" text="MY FILES">
+            <font>
+                <Font size="40.0"/>
+            </font>
+        </Label>
+    </children>
+</StackPane>

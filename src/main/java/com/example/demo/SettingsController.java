@@ -9,14 +9,18 @@ import javafx.scene.Parent;
 
 
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.ResourceBundle;
 
 /** Kayden */
 public class SettingsController extends SaveState implements Initializable {
 
+    // Variable used across multiply instances to check if darkMode is enabled or not
+    private static boolean darkMode;
 
-    private boolean darkMode;
+    // Temp save variable
+    private boolean isDarkMode;
+
+    //
     private String name;
     private Role role;
     private transient String path = devFolder + "/Settings.json";
@@ -49,7 +53,6 @@ public class SettingsController extends SaveState implements Initializable {
             this.setName(temp.getName());
             this.setRole(temp.getRole());
 
-            System.out.println(this.name);
 
 
 
@@ -61,6 +64,7 @@ public class SettingsController extends SaveState implements Initializable {
             roles.setValue(this.role);
         }
         nameBox.setText(this.name);
+        this.changeMode(parent);
 
     }
 
@@ -68,16 +72,12 @@ public class SettingsController extends SaveState implements Initializable {
         setRole(roles.getSelectionModel().getSelectedItem());
         setName(nameBox.getText());
 
-        ArrayList saveList = new ArrayList<>();
-        saveList.add(name);
-        saveList.add(role);
-        saveList.add(darkMode);
-
+        this.isDarkMode = SettingsController.darkMode;
 
         SettingsController temp = new SettingsController();
         temp.setName(this.getName());
         temp.setRole(this.getRole());
-        temp.setDarkMode(this.getDarkMode());
+        temp.isDarkMode = this.getDarkMode();
 
         System.out.println(this.getDarkMode());
 
@@ -104,26 +104,21 @@ public class SettingsController extends SaveState implements Initializable {
     }
 
 
-    public void exit() {
-        System.out.println(getRole());
-        System.out.println(getName());
-    }
-
     private void setDarkMode(){
         parent.getStylesheets().remove(getClass().getResource("lightMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("darkMode.css").toExternalForm());
-        this.darkMode = true;
+        SettingsController.darkMode = true;
     }
 
     private void setLightMode(){
         parent.getStylesheets().remove(getClass().getResource("darkMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("lightMode.css").toExternalForm());
-        this.darkMode = false;
+        SettingsController.darkMode = false;
     }
 
     // For internal use only
     public void changeMode(){
-        if (this.darkMode) {
+        if (SettingsController.darkMode) {
             setLightMode();
         }
         else {
@@ -134,7 +129,7 @@ public class SettingsController extends SaveState implements Initializable {
 
     // For external use
     public void changeMode(Parent parent){
-        if (this.darkMode) {
+        if (SettingsController.darkMode) {
             setDarkMode(parent);
         }
         else {
@@ -156,11 +151,10 @@ public class SettingsController extends SaveState implements Initializable {
 
 
     private void setDarkMode(Boolean darkMode) {
-        this.darkMode = darkMode;
+        SettingsController.darkMode = darkMode;
     }
 
-    private boolean getDarkMode(){
-        return this.darkMode;
+    private boolean getDarkMode(){ return this.isDarkMode;
     }
 
 }

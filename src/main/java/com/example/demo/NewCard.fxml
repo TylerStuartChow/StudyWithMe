@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane maxHeight="400.0" maxWidth="600.0" prefHeight="200.0" prefWidth="300.0" xmlns="http://javafx.com/javafx/19" xmlns:fx="http://javafx.com/fxml/1" fx:controller="sample.NewCardController">
+   <children>
+      <Pane fx:id="myPane" maxHeight="450.0" maxWidth="600.0" prefHeight="225.0" prefWidth="300.0">
+         <children>
+            <BorderPane maxHeight="450.0" maxWidth="600.0" prefHeight="225.0" prefWidth="300.0" style="-fx-background-color: #87CEEB;">
+               <bottom>
+                  <Pane maxHeight="80.0" maxWidth="600.0" prefHeight="40.0" prefWidth="300.0" BorderPane.alignment="CENTER" />
+               </bottom>
+               <left>
+                  <Pane maxHeight="220.0" maxWidth="75.0" prefHeight="110.0" prefWidth="37.5" BorderPane.alignment="CENTER" />
+               </left>
+               <right>
+                  <Pane maxHeight="260.0" maxWidth="75.0" prefHeight="130.0" prefWidth="37.5" BorderPane.alignment="CENTER" />
+               </right>
+               <center>
+                  <Pane maxHeight="260.0" maxWidth="450.0" prefHeight="131.0" prefWidth="225.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <TextArea fx:id="front" layoutY="14.0" maxHeight="300.0" maxWidth="400.0" prefHeight="75.0" prefWidth="100.0" style="-fx-control-inner-background: #E6E6FA; -fx-border-color: #00008B; -fx-border-width: 2px;" />
+                        <TextArea fx:id="back" layoutX="125.0" layoutY="14.0" maxHeight="300.0" maxWidth="400.0" prefHeight="75.0" prefWidth="100.0" style="-fx-control-inner-background: #E6E6FA; -fx-border-color: #00008B; -fx-border-width: 2px;" />
+                        <Label layoutX="30.0" layoutY="101.0" text="Front" textFill="DARKBLUE">
+                           <font>
+                              <Font name="System Bold Italic" size="16.0" />
+                           </font>
+                        </Label>
+                        <Label layoutX="156.0" layoutY="101.0" text="Back" textFill="DARKBLUE">
+                           <font>
+                              <Font name="System Bold Italic" size="16.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="add_card_btn" layoutX="36.0" layoutY="140.0" mnemonicParsing="false" onAction="#handleAddCard" style="-fx-background-color: #87CEEB; -fx-border-color: #00008B;" text="Add Flashcard" textFill="DARKBLUE">
+                           <font>
+                              <Font name="System Bold" size="16.0" />
+                           </font>
+                        </Button>
+                     </children>
+                  </Pane>
+               </center>
+               <top>
+                  <Pane maxHeight="90.0" maxWidth="600.0" prefHeight="45.0" prefWidth="300.0" BorderPane.alignment="CENTER">
+                     <children>
+                        <Label layoutX="50.0" prefHeight="46.0" prefWidth="200.0" text="Create Flashcard" textAlignment="CENTER" textFill="DARKBLUE" wrapText="true">
+                           <font>
+                              <Font name="System Bold" size="24.0" />
+                           </font>
+                        </Label>
+                        <Button fx:id="back_btn" layoutY="12.0" mnemonicParsing="false" onAction="#handleBackButton" prefHeight="37.0" prefWidth="33.0" style="-fx-background-color: #87CEEB; -fx-pref-width: 3px; -fx-pref-height: 3px; -fx-shape: circle(3, 3);">
+                           <graphic>
+                              <ImageView fitHeight="30.0" fitWidth="35.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../images/backarrow.png" />
+                                 </image>
+                              </ImageView>
+                           </graphic>
+                        </Button>
+                     </children>
+                  </Pane>
+               </top>
+            </BorderPane>
+         </children>
+      </Pane>
+   </children>
+</AnchorPane>

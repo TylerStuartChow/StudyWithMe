@@ -20,9 +20,13 @@ public class SettingsController extends SaveState implements Initializable {
     // Temp save variable
     private boolean isDarkMode;
 
-    //
+    // variable to hold the user's name
     private String name;
+
+    // variable to hold the user's role
     private Role role;
+
+    // variable
     private transient String path = devFolder + "/Settings.json";
 
     @FXML
@@ -48,15 +52,14 @@ public class SettingsController extends SaveState implements Initializable {
 
         SettingsController temp = SaveState.LoadObject(path, SettingsController.class);
 
-
-            this.setDarkMode(temp.getDarkMode());
-            this.setName(temp.getName());
-            this.setRole(temp.getRole());
-
-
-
+            if (temp != null) {
+                this.setDarkMode(temp.getDarkMode());
+                this.setName(temp.getName());
+                this.setRole(temp.getRole());
+            }
 
         roles.getItems().addAll(Role.Student_High, Role.Student_Uni, Role.Teacher, Role.Trainee, Role.Individual, Role.Other);
+
         if (this.role == null) {
             roles.setValue(Role.Other);
         }
@@ -140,13 +143,11 @@ public class SettingsController extends SaveState implements Initializable {
     public void setDarkMode(Parent parent){
         parent.getStylesheets().remove(getClass().getResource("lightMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("darkMode.css").toExternalForm());
-        System.out.println("Called dark");
     }
 
     public void setLightMode(Parent parent){
         parent.getStylesheets().remove(getClass().getResource("darkMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("lightMode.css").toExternalForm());
-        System.out.println("Called light");
     }
 
 

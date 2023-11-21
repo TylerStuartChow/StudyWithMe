@@ -15,20 +15,20 @@ error values
 
 package com.example.demo;
 
-import java.lang.annotation.Inherited;
 import java.util.ArrayList;
 
 
 
 
 
-//TODO: standardize return values of functions
+//TODO: add any special return values the front end might want to ask the user about
+//TODO: add notes
 
 public class NoteTaker extends SaveState implements Searchable{
 
     private static ArrayList<Subject> subjectList = new ArrayList<>();
 
-    public static String subjectListFilePath = SaveState.devFolder + "/Subjects.json";//file path to json storing subject objects
+    public final static String subjectListFilePath = SaveState.devFolder + "/Subjects.json";//file path to json storing subject objects
 
 
     private static Subject currentSubject;//the subject the user is currently interacting with
@@ -101,7 +101,7 @@ public class NoteTaker extends SaveState implements Searchable{
      * @param name the name of the desired subject
      * @return 0 if successful, -2 if there are no subjects created, -3 if it couldn't find a subject with that name
      */
-    public static int ChangeSubject (String name){
+    public static int SelectSubject (String name){
 
         //making sure previous subjects are loaded
         if (subjectList.isEmpty()){subjectList = Load(subjectListFilePath, Subject.class);}
@@ -237,6 +237,7 @@ public class NoteTaker extends SaveState implements Searchable{
         //checking that a subject was selected
         if (currentSubject == null){
             System.out.println("need to select a subject before you can create a cue card");
+            AlertBox.display("Error adding CueCard","need to select a subject before you can create a cue card" );
             return -2;
         }
 
@@ -244,6 +245,8 @@ public class NoteTaker extends SaveState implements Searchable{
         if (result == 0){
             if(!Save(subjectListFilePath, subjectList)){//issue when saving
                 System.out.println("failed to update " + subjectListFilePath + " when adding a cue card from " + currentSubject.GetName());
+                AlertBox.display("Error Adding CueCard","failed to update " + subjectListFilePath + " when adding a cue card from " + currentSubject.GetName());
+
                 return -1;
             }
         }
@@ -258,7 +261,7 @@ public class NoteTaker extends SaveState implements Searchable{
      * @param oldAnswer the original answer
      * @param newQuestion the new question
      * @param newAnswer the new answer
-     * @return 0 if success, -1 if there was an issue saving, -2 if the currentSubject was not selected,  -3 if the card wasn't found
+     * @return 0 if success, -1 if there was an issue saving, -2 if the currentSubject was not selected or the new question or answer was blank,  -3 if the card wasn't found
      */
     public static int ChangeCard(String oldQuestion, String oldAnswer, String newQuestion, String newAnswer){
 
@@ -331,6 +334,7 @@ public class NoteTaker extends SaveState implements Searchable{
         //checking that a subject was selected
         if (currentSubject == null){
             System.out.println("need to select a subject before you can get a cue card");
+            AlertBox.display("Error in CueCard", "need to select a subject before you can get a cue card");
             return new ArrayList<String>();
         }
 
@@ -345,11 +349,48 @@ public class NoteTaker extends SaveState implements Searchable{
 
         //checking that a subject was selected
         if (currentSubject == null){
-            System.out.println("need to select a subject before you can randomize the cue cards");
+            System.out.println("need to select a subject before you can randomize the cue cards"); //TODO use AlertBox
         }
         else {currentSubject.RandomizeCards();}
     }
 
+
+
+    /***
+     * gets the notePath for currentSubject
+     * @return the notePath
+     */
+    public static String GetNotesFilePath(){
+        return currentSubject.GetNotesFilePath();
+    }
+
+
+    //TODO: change / remove this if we don't want each subject to have a pdf file
+    /***
+     * gets the pdfPath for currentSubject
+     * @return the pdfPath
+     */
+    public static String GetPDFFilePath(){
+        return currentSubject.GetPDFFilePath();
+    }
+
+    /***
+     * gets a list of all the pdf filenames in currentSubject's pdfs folder without their file extension
+     * @return an empty list if no subject was selected or a list of pdf filenames without the file extension
+     */
+    public static ArrayList<String> GetAllPDFs(){
+        if (currentSubject == null){return new ArrayList<>();}
+        else {return currentSubject.GetAllPDFs();}
+    }
+
+    /***
+     * gets a list of all the pdf filenames in currentSubject's notes folder without their file extension
+     * @return an empty list if no subject was selected or a list of pdf filenames without the file extension
+     */
+    public static ArrayList<String> GetAllNotes(){
+        if (currentSubject == null){return new ArrayList<>();}
+        else{return currentSubject.GetAllNotes();}
+    }
 
 
 
@@ -359,7 +400,8 @@ public class NoteTaker extends SaveState implements Searchable{
         String results = "Subjects";
         boolean foundSomething = false;
 
-
+        //making sure the subjects were loaded
+        if (subjectList.isEmpty()){subjectList = Load(subjectListFilePath, Subject.class);}
 
         //searching the Subjects
         int subjectIndex = 0;
@@ -439,9 +481,13 @@ public class NoteTaker extends SaveState implements Searchable{
         boolean pass;
         int numPassed = 0;
         int numTested = 0;
+        int listSize;
 
 
         //testing AddSubject and GetAllSubjectNames
+        System.out.println("            testing AddSubject");
+
+        System.out.println("testing base case for AddSubject");
         AddSubject("test subject 0");
         AddSubject("test subject 1");
         AddSubject("test subject 10");
@@ -452,7 +498,24 @@ public class NoteTaker extends SaveState implements Searchable{
             System.out.println("there is an issue with either AddSubject or GetAllSubjectNames\nresults:");
             System.out.println(GetAllSubjectNames());
         }
-        else{numPassed += 1;}
+        else{
+            numPassed += 1;
+            System.out.println("passed\n");
+        }
+
+
+
+        //testing adding a subject with the same name
+        System.out.println("test case: adding the same subject twice");
+        numTested += 1;
+        if (AddSubject("test subject 0") == -2){
+            numPassed += 1;
+            System.out.println("passed\n");
+        }
+        else{
+            System.out.println("failed: AddSubject didn't throw an error when adding the same subject twice\n");
+        }
+
 
 
         //testing what happens when no subject was selected
@@ -465,7 +528,7 @@ public class NoteTaker extends SaveState implements Searchable{
             System.out.println("DeleteSubjectFolder didn't throw an error when it should have");
         }
 
-        if (ChangeSubjectName("random name") >= 0){
+        if (ChangeSubjectName("random name") != -2){
             pass = false;
             System.out.println("ChangeSubjectName didn't throw an error when it was supposed to");
         }
@@ -480,17 +543,17 @@ public class NoteTaker extends SaveState implements Searchable{
             System.out.println("GetAllCueCards returned something when it wasn't supposed to");
         }
 
-        if (AddCueCard("test q", "test a") >= 0){
+        if (AddCueCard("test q", "test a") != -2){
             pass = false;
             System.out.println("AddCueCard didn't throw an error when it was supposed to");
         }
 
-        if (ChangeCard("q", "a", "Q", "A") >= 0){
+        if (ChangeCard("q", "a", "Q", "A") != -2){
             pass = false;
             System.out.println("ChangeCard didn't throw an error when it was supposed to");
         }
 
-        if (RemoveCard("q", "a") >= 0){
+        if (RemoveCard("q", "a") != -2){
             pass = false;
             System.out.println("RemoveCard didn't throw an error when it was supposed to");
         }
@@ -520,7 +583,7 @@ public class NoteTaker extends SaveState implements Searchable{
         System.out.println("testing changing to a subject that doesn't exist");
 
         numTested += 1;
-        if (ChangeSubject("should not exist") < 0){
+        if (SelectSubject("should not exist") == -3){
             numPassed += 1;
             System.out.println("passed\n");
         }
@@ -531,7 +594,7 @@ public class NoteTaker extends SaveState implements Searchable{
         numTested += 1;
 
         String name = "test subject 10";
-        ChangeSubject(name);
+        SelectSubject(name);
         if (GetName().equals(name)){
             numPassed += 1;
             System.out.println("passed\n");
@@ -548,10 +611,12 @@ public class NoteTaker extends SaveState implements Searchable{
         System.out.println("testing deleting a subject");
         numTested += 1;
 
-        ChangeSubject("test subject 10");
-        if (DeleteSubjectFolder() >= 0){
+        listSize = GetAllSubjectNames().size();
+
+        SelectSubject("test subject 10");
+        if (DeleteSubjectFolder() == 0){
             System.out.println("testing if currentSubject is null using GetName");
-            if (GetName().isEmpty() && GetAllSubjectNames().size() == 3){
+            if (GetName().isEmpty() && GetAllSubjectNames().size() == listSize - 1){
                 numPassed += 1;
                 System.out.println("passed\n");
             }
@@ -569,8 +634,8 @@ public class NoteTaker extends SaveState implements Searchable{
         System.out.println("testing changing name to an already existing subject");
         numTested += 1;
 
-        ChangeSubject("test subject 2");
-        if (ChangeSubjectName("test subject 1") < 0){
+        SelectSubject("test subject 2");
+        if (ChangeSubjectName("test subject 1") == -2){
             numPassed += 1;
             System.out.println("passed\n");
         }
@@ -583,6 +648,8 @@ public class NoteTaker extends SaveState implements Searchable{
 
         ChangeSubjectName("");
         if (GetName().equals("new folder")){
+
+            SelectSubject("test subject 2");
             ChangeSubjectName("  ");
             if (GetName().equals("new folder")){
                 numPassed += 1;
@@ -613,7 +680,7 @@ public class NoteTaker extends SaveState implements Searchable{
 
         //testing cue card methods
         System.out.println("        testing cue card methods");
-        ChangeSubject("test subject 0");
+        SelectSubject("test subject 0");
 
 
         //testing cue card methods when no cue cards were added
@@ -621,12 +688,12 @@ public class NoteTaker extends SaveState implements Searchable{
         numTested += 1;
         pass = true;
 
-        if (RemoveCard("q", "a") >= 0){
+        if (RemoveCard("q", "a") != -3){
             pass = false;
             System.out.println("failed: RemoveCard didn't throw an error when it was supposed to");
         }
 
-        if (ChangeCard("q", "a", "Q", "A") >= 0){
+        if (ChangeCard("q", "a", "Q", "A") != -3){
             pass = false;
             System.out.println("failed: ChangeCard didn't throw an error when it was supposed to");
         }
@@ -654,12 +721,14 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
         //testing AddCueCard and GetAllCueCards
-        System.out.println("testing AddCueCards and GetAllCueCards");
+        System.out.println("testing AddCueCards base case and GetAllCueCards");
+
+
         numTested += 1;
 
-        ChangeSubject("test subject 1");
+        SelectSubject("test subject 1");
 
-        int listSize = GetAllCueCards().size();
+        listSize = GetAllCueCards().size();
 
         AddCueCard("1 q1", "1 a1");
         AddCueCard("1 q2", "1 a2");
@@ -677,13 +746,36 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
 
+        System.out.println("testing adding a cue card with a blank question or answer");
+        numTested += 1;
+        pass = true;
+
+        if (AddCueCard("", "a") != -2 || AddCueCard("q", "") != -2){
+            pass = false;
+        }
+
+        if (AddCueCard("   ", "a") != -2 || AddCueCard("q", "    ") != -2){
+            pass = false;
+        }
+
+        if (pass){
+            numPassed += 1;
+            System.out.println("passed\n");
+        }
+        else{
+            System.out.println("failed: added a cue card with a blank question or answer");
+        }
+
+
+
+
         //testing ChangeCard()
         System.out.println("testing changing the cue card of another subject");
         numTested += 1;
 
-        ChangeSubject("test subject 2");
+        SelectSubject("test subject 2");
 
-        if (ChangeCard("1 q1", "1 a1", "Q", "A") < 0){
+        if (ChangeCard("1 q1", "1 a1", "Q", "A") == -3){
             numPassed += 1;
             System.out.println("passed\n");
         }
@@ -692,12 +784,12 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
         //base case
-        ChangeSubject("test subject 1");
+        SelectSubject("test subject 1");
 
         System.out.println("testing base case for ChangeCard");
         numTested += 1;
 
-        if (ChangeCard("1 q", "1 a", "1 q3", "1 a3") >= 0){
+        if (ChangeCard("1 q", "1 a", "1 q3", "1 a3") == 0){
             ArrayList<ArrayList<String>> cards = GetAllCueCards();
             if (cards.get(2).get(0).equals("1 q3") && cards.get(2).get(1).equals("1 a3")){
                 numPassed += 1;
@@ -709,10 +801,33 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
 
+        System.out.println("testing changing a cue card to have a blank question or answer");
+        numTested += 1;
+        pass = true;
+
+        if (ChangeCard("1 q2", "1 a2", "", "A") != -2 || ChangeCard("1 q2", "1 a2", "Q", "") != -2){
+            pass = false;
+        }
+
+        if (ChangeCard("1 q2", "1 a2", "     ", "A") != -2 || ChangeCard("1 q2", "1 a2", "Q", "     ") != -2){
+            pass = false;
+        }
+
+        if (pass){
+            numPassed += 1;
+            System.out.println("passed\n");
+        }
+        else{
+            System.out.println("failed: changed a cue card to have a blank question or answer");
+        }
+
+
+
+
         //testing RemoveCard
         System.out.println("testing RemoveCard for a card that doesn't exist");
         numTested += 1;
-        if (RemoveCard("qw", "aw") < 0){
+        if (RemoveCard("qw", "aw") == -3){
             numPassed += 1;
             System.out.println("passed\n");
         }
@@ -724,7 +839,7 @@ public class NoteTaker extends SaveState implements Searchable{
         AddCueCard("q4", "a4");
 
         listSize = GetAllCueCards().size();
-        if (RemoveCard("q4", "a4") >= 0 && GetAllCueCards().size() == listSize - 1){
+        if (RemoveCard("q4", "a4") == 0 && GetAllCueCards().size() == listSize - 1){
             numPassed += 1;
             System.out.println("passed\n");
         }
@@ -796,6 +911,13 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
 
+        SelectSubject("test subject 1");
+        RandomizeCards();
+        for (int index = 0; index < GetAllCueCards().size(); index++){
+            System.out.println(GetNextCard());
+        }
+
+
 
         System.out.println(numPassed + " / " + numTested + " test cases passed");
 
@@ -804,16 +926,16 @@ public class NoteTaker extends SaveState implements Searchable{
 
 
 
-        String searchingFor = "1 a";
+        String searchingFor = "a1";
         System.out.println("\n\n searching for " + searchingFor);
         System.out.println(Searchable.Search(searchingFor));
 
         //cleaning up the results of testing
-        ArrayList<String> remainingFiles = GetAllSubjectNames();
-        remainingFiles.forEach(sub ->{
-            ChangeSubject(sub);
-            DeleteSubjectFolder();
-        });
+//        ArrayList<String> remainingFiles = GetAllSubjectNames();
+//        remainingFiles.forEach(sub ->{
+//            SelectSubject(sub);
+//            DeleteSubjectFolder();
+//        });
     }
 
 }

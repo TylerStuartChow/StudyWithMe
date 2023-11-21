@@ -12,31 +12,19 @@ import java.net.URL;
 import java.util.ResourceBundle;
 
 /** Kayden */
-public class SettingsController extends SaveState implements Initializable {
+public class SettingsController implements Initializable {
 
-    // Variable used across multiply instances to check if darkMode is enabled or not
+    @FXML
+    private Pane parent;
     private static boolean darkMode;
-
-    // Temp save variable
-    private boolean isDarkMode;
-
-    // variable to hold the user's name
     private String name;
-
-    // variable to hold the user's role
     private Role role;
 
-    // variable
-    private transient String path = devFolder + "/Settings.json";
+    @FXML
+    private ChoiceBox<Role> roles;
 
     @FXML
-    private transient ChoiceBox<Role> roles;
-
-    @FXML
-    private transient TextField nameBox;
-
-    @FXML
-    private transient Pane parent;
+    private TextField nameBox;
 
     private enum Role{
         Student_High,
@@ -49,46 +37,12 @@ public class SettingsController extends SaveState implements Initializable {
 
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
-        SettingsController temp = SaveState.LoadObject(path, SettingsController.class);
-
-            if (temp != null) {
-                this.setDarkMode(temp.getDarkMode());
-                this.setName(temp.getName());
-                this.setRole(temp.getRole());
-            }
-
         roles.getItems().addAll(Role.Student_High, Role.Student_Uni, Role.Teacher, Role.Trainee, Role.Individual, Role.Other);
-
-        if (this.role == null) {
+        if (roles.getSelectionModel().getSelectedItem() == null) {
             roles.setValue(Role.Other);
         }
-        else {
-            roles.setValue(this.role);
-        }
-        nameBox.setText(this.name);
-        this.changeMode(parent);
 
     }
-
-    public void save() {
-        setRole(roles.getSelectionModel().getSelectedItem());
-        setName(nameBox.getText());
-
-        this.isDarkMode = SettingsController.darkMode;
-
-        SettingsController temp = new SettingsController();
-        temp.setName(this.getName());
-        temp.setRole(this.getRole());
-        temp.isDarkMode = this.getDarkMode();
-
-        System.out.println(this.getDarkMode());
-
-        SaveState.Save(path, temp);
-
-
-    }
-
 
     public String getName(){
         return this.name;
@@ -106,6 +60,15 @@ public class SettingsController extends SaveState implements Initializable {
         this.role = role;
     }
 
+    public void save() {
+        setRole(roles.getSelectionModel().getSelectedItem());
+        setName(nameBox.getText());
+    }
+
+    public void exit() {
+        System.out.println(getRole());
+        System.out.println(getName());
+    }
 
     private void setDarkMode(){
         parent.getStylesheets().remove(getClass().getResource("lightMode.css").toExternalForm());
@@ -143,19 +106,13 @@ public class SettingsController extends SaveState implements Initializable {
     public void setDarkMode(Parent parent){
         parent.getStylesheets().remove(getClass().getResource("lightMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("darkMode.css").toExternalForm());
+        System.out.println("Called dark");
     }
 
     public void setLightMode(Parent parent){
         parent.getStylesheets().remove(getClass().getResource("darkMode.css").toExternalForm());
         parent.getStylesheets().add(getClass().getResource("lightMode.css").toExternalForm());
-    }
-
-
-    private void setDarkMode(Boolean darkMode) {
-        SettingsController.darkMode = darkMode;
-    }
-
-    private boolean getDarkMode(){ return this.isDarkMode;
+        System.out.println("Called light");
     }
 
 }

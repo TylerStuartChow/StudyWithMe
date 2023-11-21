@@ -1,4 +1,17 @@
+.school {
+    -fx-background-color: orange;
+    -fx-text-fill: white;
+}
 
+.work {
+    -fx-background-color: pink;
+    -fx-text-fill: white;
+}
+
+.other {
+    -fx-background-color: grey;
+    -fx-text-fill: white;
+}
 
 .button {
     -fx-background-color: dimgray;
@@ -18,6 +31,27 @@
      -fx-background-color: #292929;
 }
 
+.pdf_view{
+     -fx-background-color: #AFEEEE;
+}
+
+.notes_view{
+     -fx-background-color: #B0E0E6;
+}
+
+.flashcard_view{
+     -fx-background-color: #87CEEB;
+}
+
+.menu_view{
+     -fx-background-color: #ADD8E6;
+}
+
+.imageview{
+     -fx-blend-mode: multiply;
+}
+
+
 .text{
     -fx-fill: white;
 }
@@ -28,8 +62,26 @@
     -fx-text-fill: black;
 }
 
+.choice-box .menu-item{
+    -fx-background-color: dimgrey;
+}
+
+.choice-box .menu-item:focused{
+    -fx-background-color: orange;
+}
+
+.list-cell {
+    -fx-background-color: dimgrey;
+}
+
+.list-cell:filled:hover{
+    -fx-background-color: orange;
+}
+
 .choice-box:hover  {
     -fx-background-color: lightgrey;
+    -fx-border-color: black;
+    -fx-text-fill: black;
 }
 
 .text-field {

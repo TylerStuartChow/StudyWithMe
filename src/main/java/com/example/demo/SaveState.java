@@ -20,9 +20,12 @@ import java.util.ArrayList;
  */
 public class SaveState {
 
-    public static String appName = "Circle App"; //directory for the app's files
+    public final static String appName = "Circle App"; //directory for the app's files
 
-    public static String devFolder = appName + "/dev file";//directory for developers to store files the user doesn't need to interact with
+    public final static String devFolder = appName + "/dev file";//directory for developers to store files the user doesn't need to interact with
+
+    public static String appFolderAbsolutePath = System.getProperty("user.dir");
+
 
 
     // add transient to attributes if you don't want them to be saved
@@ -66,7 +69,7 @@ public class SaveState {
         }
         catch (Exception e) {
             System.out.println("failed to save: " + filePath);
-            e.printStackTrace();
+//            e.printStackTrace();
             return false;
         }
 
@@ -75,7 +78,7 @@ public class SaveState {
 
 
     /***
-     * Loads objects saved in a .json file containing only one type of object
+     * Loads objects saved in a list in a .json file containing only one type of object
      * @param filePath the name of the .json file, defaults to working directory if not specified
      * @param className the class of the object stored in the file
      * @param <type> the type of the object stored
@@ -111,7 +114,7 @@ public class SaveState {
         }
         catch (Exception e) {
             System.out.println("failed to load " + className + " or file wasn't created yet");
-            e.printStackTrace();
+//            e.printStackTrace();
         }
 
         return objList;
@@ -125,19 +128,11 @@ public class SaveState {
      * @param className the class of the object stored in the file
      * @param <type> the type of the object stored
      * @precond the .json file filepath must exist or it returns an empty list
-     * @return a list of objects or an empty list
+     * @return the object stored in the json file or null on error
      */
-
-
     static <type> type LoadObject(String filePath, Class<type> className) {
 
         type result = null;
-
-        ArrayList<type> objList = new ArrayList<>(); //list of desired objects
-
-        ArrayList<type> tempList; //list to store loaded objects of the wrong type
-
-
 
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(ZonedDateTime.class, new ZonedDateTimeTypeAdapter())
@@ -148,9 +143,6 @@ public class SaveState {
             FileReader file = new FileReader(filePath);
             result = gson.fromJson(file, className);
 
-            //converting the items of the array list to the right type
-
-
             file.close();
 
         }
@@ -160,6 +152,26 @@ public class SaveState {
         }
 
         return result;
+    }
+
+
+    /***
+     * checks if a file exists in a folder
+     * @param fileName the name of the file being looked for
+     * @param folder the folder being checked for the file
+     * @return true if the file exists in the folder, false if it doesn't
+     */
+    public static boolean FileExists(String fileName, String folder){
+        File folderFile = new File(folder);
+
+        String[] files = folderFile.list();
+
+        //searching through the content of notes for fileName
+        for (int index = 0; index < files.length; index++){
+            if (files[index].equals(fileName)){return true;}
+        }
+
+        return false;
     }
 
 //testing
